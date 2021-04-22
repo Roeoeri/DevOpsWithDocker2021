@@ -1,0 +1,46 @@
+version: '3.5' 
+
+services: 
+  proxy:
+    image: nginx
+    volumes:
+     - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+     - "80:80"
+    container_name: nginx_proxy
+
+  front: 
+    image: frontend
+    ports: 
+      - 5000:5000
+    container_name: frontend
+
+  back: 
+    image: backend
+    environment: 
+     - REQUEST_ORIGIN=http://localhost:5000
+     - REDIS_HOST=redis_cache
+     - POSTGRES_HOST=db_redmine
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=example
+    ports: 
+        - 8080:8080
+    container_name: backend
+
+    
+  db:
+    image: postgres:13.2-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: example
+    container_name: db_redmine
+
+  redis: 
+    image: redis
+    container_name: redis_cache
+
+
+      
+
+    
+     
